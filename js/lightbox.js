@@ -22,6 +22,8 @@
     alwaysShowNavOnTouchDevices: false,
     wrapAround:                  false,
     hideImageDuringChange:       true,
+    showPreviews:                false,
+    overridePreviewsPosition:    "center",
     albumLabel:                  function(curImageNum, albumSize) {
                                    return "Image " + curImageNum + " of " + albumSize;
                                  }
@@ -56,7 +58,21 @@
       var self = this;
       var el =
         "<div id='lightboxOverlay' class='lightboxOverlay'></div>"+
-        "<div id='lightbox' class='lightbox'>"+
+        "<div id='lightbox' class='lightbox'>";
+      if (this.options.showPreviews) {
+        el +=
+          "<div class='lb-previews-container'>"+
+            "<div class='lb-preview-images-container'>"+
+              "<div class='lb-prev-preview-container'>"+
+                "<img class='lb-prev-preview' src='' />"+
+              "</div>"+
+              "<div class='lb-next-preview-container'>"+
+                "<img class='lb-next-preview' src='' />"+
+              "</div>"+
+            "</div>"+
+          "</div>";
+      }
+      el +=
           "<div class='lb-outerContainer'>"+
             "<div class='lb-container'>"+
               "<img class='lb-image' src='' />"+
@@ -93,6 +109,14 @@
       this.$prev           = this.$lightbox.find('.lb-prev');
       this.$next           = this.$lightbox.find('.lb-next');
 
+      if (this.options.showPreviews) {
+        this.$previewsContainer = this.$lightbox.find(".lb-previews-container");
+        this.$prevPreviewContainer = this.$lightbox.find('.lb-prev-preview-container');
+        this.$nextPreviewContainer = this.$lightbox.find('.lb-next-preview-container');
+        this.$prevPreview = this.$lightbox.find('.lb-prev-preview');;
+        this.$nextPreview = this.$lightbox.find('.lb-next-preview');;
+      }
+
       // Store css values for future lookup
       this.containerTopPadding = parseInt(this.$container.css('padding-top'), 10);
       this.containerRightPadding = parseInt(this.$container.css('padding-right'), 10);
@@ -114,23 +138,32 @@
       this.$loader.on('click', closeFunc);
       this.$lightbox.find('.lb-close').on('click', closeFunc);
 
-      this.$prev.on('click', function() {
+      var clickPrev = function() {
         if (self.isFirstImage()) {
           self.changeImage(self.album.length - 1);
         } else {
           self.changeImage(self.currentImageIndex - 1);
         }
         return false;
-      });
+      };
 
-      this.$next.on('click', function() {
+      var clickNext = function() {
         if (self.isLastImage()) {
           self.changeImage(0);
         } else {
           self.changeImage(self.currentImageIndex + 1);
         }
         return false;
-      });
+      };
+
+      this.$prev.on('click', clickPrev);
+      this.$next.on('click', clickNext);
+
+      if (this.options.showPreviews) {
+        this.$previewsContainer.on('click', closeFunc);
+        this.$prevPreview.on('click', clickPrev);
+        this.$nextPreview.on('click', clickNext);
+      }
 
     };
 
@@ -273,6 +306,9 @@
       function postResize() {
         self.$lightbox.find('.lb-dataContainer').width(newWidth);
         self.showImage();
+        if (self.options.showPreviews) {
+          self.updatePreviews(newWidth, newHeight);
+        }
       }
 
       if (oldWidth !== newWidth || oldHeight !== newHeight) {
@@ -287,6 +323,26 @@
       }
     };
 
+    Lightbox.prototype.updatePreviews = function(imgWidth, imgHeight) {
+      if (this.isFirstImage()) {
+        this.$prevPreviewContainer.hide();
+      } else {
+        this.$prevPreviewContainer.show();
+        this.$prevPreview.attr('src', this.album[this.currentImageIndex-1].link);
+      }
+
+      if (this.isLastImage()) {
+        this.$nextPreviewContainer.hide();
+      } else {
+        this.$nextPreviewContainer.show();
+        this.$nextPreview.attr('src', this.album[this.currentImageIndex+1].link);
+      }
+
+      if (this.options.overridePreviewsPosition == "center") {
+        this.$previewsContainer.css({top: imgHeight/2 - this.$previewsContainer.height()/2 + "px"});
+      }
+    };
+
     // Display the image and it's details and begin preload neighboring images.
     Lightbox.prototype.showImage = function() {
       this.$loader.hide();
@@ -294,7 +350,9 @@
 
       this.updateNav();
       this.updateDetails();
-      this.preloadNeighboringImages();
+      if (!this.options.showPreviews) {
+        this.preloadNeighboringImages();
+      }
       this.enableKeyboardNav();
     };
 
