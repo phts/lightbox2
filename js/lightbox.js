@@ -11,33 +11,26 @@
   // Use local alias
   var $ = jQuery;
 
-  var LightboxOptions = (function() {
-    function LightboxOptions() {
-      this.fadeDuration                = 500;
-      this.loaderFadeDuration          = "slow";
-      this.imageFadeDuration           = "slow";
-      this.detailsFadeDuration         = "fast";
-      this.fitImagesInViewport         = true;
-      this.resizeDuration              = 700;
-      this.positionFromTop             = 50;
-      this.showImageNumberLabel        = true;
-      this.alwaysShowNavOnTouchDevices = false;
-      this.wrapAround                  = false;
-      this.hideImageDuringChange       = true;
-    }
-
-    // Change to localize to non-english language
-    LightboxOptions.prototype.albumLabel = function(curImageNum, albumSize) {
-      return "Image " + curImageNum + " of " + albumSize;
-    };
-
-    return LightboxOptions;
-  })();
-
+  var defaults = {
+    fadeDuration:                500,
+    loaderFadeDuration:          "slow",
+    imageFadeDuration:           "slow",
+    detailsFadeDuration:         "fast",
+    fitImagesInViewport:         true,
+    resizeDuration:              700,
+    positionFromTop:             50,
+    showImageNumberLabel:        true,
+    alwaysShowNavOnTouchDevices: false,
+    wrapAround:                  false,
+    hideImageDuringChange:       true,
+    albumLabel:                  function(curImageNum, albumSize) {
+                                   return "Image " + curImageNum + " of " + albumSize;
+                                 }
+  }
 
   var Lightbox = (function() {
     function Lightbox(options) {
-      this.options           = options;
+      this.options           = $.extend({}, defaults, options);
       this.album             = [];
       this.currentImageIndex = void 0;
       this.init();
@@ -410,9 +403,6 @@
 
   })();
 
-  $(function() {
-    var options  = new LightboxOptions();
-    var lightbox = new Lightbox(options);
-  });
+  window.Lightbox = Lightbox;
 
 }).call(this);
