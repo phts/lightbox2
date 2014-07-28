@@ -20,6 +20,7 @@
       this.showImageNumberLabel        = true;
       this.alwaysShowNavOnTouchDevices = false;
       this.wrapAround                  = false;
+      this.hideImageDuringChange       = true;
     }
 
     // Change to localize to non-english language
@@ -188,7 +189,10 @@
       this.$overlay.fadeIn(this.options.fadeDuration);
 
       $('.lb-loader').fadeIn('slow');
-      this.$lightbox.find('.lb-image, .lb-nav, .lb-prev, .lb-next, .lb-dataContainer, .lb-numbers, .lb-caption').hide();
+      this.$lightbox.find('.lb-nav, .lb-prev, .lb-next, .lb-dataContainer, .lb-numbers, .lb-caption').hide();
+      if (this.options.hideImageDuringChange) {
+        this.$lightbox.find('.lb-image').hide();
+      }
 
       this.$outerContainer.addClass('animating');
 
