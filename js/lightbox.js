@@ -14,6 +14,9 @@
   var LightboxOptions = (function() {
     function LightboxOptions() {
       this.fadeDuration                = 500;
+      this.loaderFadeDuration          = "slow";
+      this.imageFadeDuration           = "slow";
+      this.detailsFadeDuration         = "fast";
       this.fitImagesInViewport         = true;
       this.resizeDuration              = 700;
       this.positionFromTop             = 50;
@@ -188,7 +191,7 @@
 
       this.$overlay.fadeIn(this.options.fadeDuration);
 
-      $('.lb-loader').fadeIn('slow');
+      $('.lb-loader').fadeIn(this.options.loaderFadeDuration);
       this.$lightbox.find('.lb-nav, .lb-prev, .lb-next, .lb-dataContainer, .lb-numbers, .lb-caption').hide();
       if (this.options.hideImageDuringChange) {
         this.$lightbox.find('.lb-image').hide();
@@ -276,7 +279,7 @@
     // Display the image and it's details and begin preload neighboring images.
     Lightbox.prototype.showImage = function() {
       this.$lightbox.find('.lb-loader').hide();
-      this.$lightbox.find('.lb-image').fadeIn('slow');
+      this.$lightbox.find('.lb-image').fadeIn(this.options.imageFadeDuration);
 
       this.updateNav();
       this.updateDetails();
@@ -329,14 +332,14 @@
       if (typeof this.album[this.currentImageIndex].title !== 'undefined' && this.album[this.currentImageIndex].title !== "") {
         this.$lightbox.find('.lb-caption')
           .html(this.album[this.currentImageIndex].title)
-          .fadeIn('fast')
+          .fadeIn(this.options.detailsFadeDuration)
           .find('a').on('click', function(event){
             location.href = $(this).attr('href');
           });
       }
 
       if (this.album.length > 1 && this.options.showImageNumberLabel) {
-        this.$lightbox.find('.lb-number').text(this.options.albumLabel(this.currentImageIndex + 1, this.album.length)).fadeIn('fast');
+        this.$lightbox.find('.lb-number').text(this.options.albumLabel(this.currentImageIndex + 1, this.album.length)).fadeIn(this.options.detailsFadeDuration);
       } else {
         this.$lightbox.find('.lb-number').hide();
       }
