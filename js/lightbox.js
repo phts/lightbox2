@@ -115,7 +115,7 @@
       this.$lightbox.find('.lb-close').on('click', closeFunc);
 
       this.$prev.on('click', function() {
-        if (self.currentImageIndex === 0) {
+        if (self.isFirstImage()) {
           self.changeImage(self.album.length - 1);
         } else {
           self.changeImage(self.currentImageIndex - 1);
@@ -124,7 +124,7 @@
       });
 
       this.$next.on('click', function() {
-        if (self.currentImageIndex === self.album.length - 1) {
+        if (self.isLastImage()) {
           self.changeImage(0);
         } else {
           self.changeImage(self.currentImageIndex + 1);
@@ -320,13 +320,13 @@
           this.$prev.show();
           this.$next.show();
         } else {
-          if (this.currentImageIndex > 0) {
+          if (!this.isFirstImage()) {
             this.$prev.show();
             if (alwaysShowNav) {
               this.$prev.css('opacity', '1');
             }
           }
-          if (this.currentImageIndex < this.album.length - 1) {
+          if (!this.isLastImage()) {
             this.$next.show();
             if (alwaysShowNav) {
               this.$next.css('opacity', '1');
@@ -366,14 +366,22 @@
 
     // Preload previous and next images in set.
     Lightbox.prototype.preloadNeighboringImages = function() {
-      if (this.album.length > this.currentImageIndex + 1) {
+      if (!this.isLastImage()) {
         var preloadNext = new Image();
         preloadNext.src = this.album[this.currentImageIndex + 1].link;
       }
-      if (this.currentImageIndex > 0) {
+      if (!this.isFirstImage()) {
         var preloadPrev = new Image();
         preloadPrev.src = this.album[this.currentImageIndex - 1].link;
       }
+    };
+
+    Lightbox.prototype.isFirstImage = function() {
+      return this.currentImageIndex === 0;
+    };
+
+    Lightbox.prototype.isLastImage = function() {
+      return this.currentImageIndex === this.album.length - 1;
     };
 
     Lightbox.prototype.enableKeyboardNav = function() {
@@ -394,13 +402,13 @@
       if (keycode === KEYCODE_ESC || key.match(/x|o|c/)) {
         this.end();
       } else if (key === 'p' || keycode === KEYCODE_LEFTARROW) {
-        if (this.currentImageIndex !== 0) {
+        if (!this.isFirstImage()) {
           this.changeImage(this.currentImageIndex - 1);
         } else if (this.options.wrapAround && this.album.length > 1) {
           this.changeImage(this.album.length - 1);
         }
       } else if (key === 'n' || keycode === KEYCODE_RIGHTARROW) {
-        if (this.currentImageIndex !== this.album.length - 1) {
+        if (!this.isLastImage()) {
           this.changeImage(this.currentImageIndex + 1);
         } else if (this.options.wrapAround && this.album.length > 1) {
           this.changeImage(0);
