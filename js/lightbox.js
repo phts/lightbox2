@@ -99,25 +99,20 @@
       this.containerBottomPadding = parseInt(this.$container.css('padding-bottom'), 10);
       this.containerLeftPadding = parseInt(this.$container.css('padding-left'), 10);
 
+      // Hide by default
+      this.$overlay.hide();
+      this.$lightbox.hide();
+
       // Attach event handlers to the newly minted DOM elements
-      this.$overlay.hide().on('click', function() {
+      var closeFunc = function() {
         self.end();
         return false;
-      });
-
-      this.$lightbox.hide().on('click', function(event) {
-        if ($(event.target).attr('id') === 'lightbox') {
-          self.end();
-        }
-        return false;
-      });
-
-      this.$outerContainer.on('click', function(event) {
-        if ($(event.target).attr('id') === 'lightbox') {
-          self.end();
-        }
-        return false;
-      });
+      }
+      this.$overlay.on('click', closeFunc);
+      this.$lightbox.on('click', closeFunc);
+      this.$outerContainer.on('click', closeFunc);
+      this.$loader.on('click', closeFunc);
+      this.$lightbox.find('.lb-close').on('click', closeFunc);
 
       this.$prev.on('click', function() {
         if (self.currentImageIndex === 0) {
@@ -137,10 +132,6 @@
         return false;
       });
 
-      this.$lightbox.find('.lb-loader, .lb-close').on('click', function() {
-        self.end();
-        return false;
-      });
     };
 
     // Show overlay and lightbox. If the image is part of a set, add siblings to album array.
