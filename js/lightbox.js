@@ -88,6 +88,10 @@
       this.$overlay        = $('#lightboxOverlay');
       this.$outerContainer = this.$lightbox.find('.lb-outerContainer');
       this.$container      = this.$lightbox.find('.lb-container');
+      this.$image          = this.$lightbox.find('.lb-image');
+      this.$loader         = this.$lightbox.find('.lb-loader');
+      this.$prev           = this.$lightbox.find('.lb-prev');
+      this.$next           = this.$lightbox.find('.lb-next');
 
       // Store css values for future lookup
       this.containerTopPadding = parseInt(this.$container.css('padding-top'), 10);
@@ -115,7 +119,7 @@
         return false;
       });
 
-      this.$lightbox.find('.lb-prev').on('click', function() {
+      this.$prev.on('click', function() {
         if (self.currentImageIndex === 0) {
           self.changeImage(self.album.length - 1);
         } else {
@@ -124,7 +128,7 @@
         return false;
       });
 
-      this.$lightbox.find('.lb-next').on('click', function() {
+      this.$next.on('click', function() {
         if (self.currentImageIndex === self.album.length - 1) {
           self.changeImage(0);
         } else {
@@ -206,14 +210,13 @@
       var self = this;
 
       this.disableKeyboardNav();
-      var $image = this.$lightbox.find('.lb-image');
 
       this.$overlay.fadeIn(this.options.fadeDuration);
 
-      $('.lb-loader').fadeIn(this.options.loaderFadeDuration);
+      this.$loader.fadeIn(this.options.loaderFadeDuration);
       this.$lightbox.find('.lb-nav, .lb-prev, .lb-next, .lb-dataContainer, .lb-numbers, .lb-caption').hide();
       if (this.options.hideImageDuringChange) {
-        this.$lightbox.find('.lb-image').hide();
+        this.$image.hide();
       }
 
       this.$outerContainer.addClass('animating');
@@ -221,39 +224,39 @@
       // When image to show is preloaded, we send the width and height to sizeContainer()
       var preloader = new Image();
       preloader.onload = function() {
-        var $preloader, imageHeight, imageWidth, maxImageHeight, maxImageWidth, windowHeight, windowWidth;
-        $image.attr('src', self.album[imageNumber].link);
+        self.$image.attr('src', self.album[imageNumber].link);
 
-        $preloader = $(preloader);
+        var $preloader = $(preloader);
 
-        $image.width(preloader.width);
-        $image.height(preloader.height);
+        self.$image.width(preloader.width);
+        self.$image.height(preloader.height);
 
         if (self.options.fitImagesInViewport) {
           // Fit image inside the viewport.
           // Take into account the border around the image and an additional 10px gutter on each side.
 
-          windowWidth    = $(window).width();
-          windowHeight   = $(window).height();
-          maxImageWidth  = windowWidth - self.containerLeftPadding - self.containerRightPadding - 20;
-          maxImageHeight = windowHeight - self.containerTopPadding - self.containerBottomPadding - 120;
+          var windowWidth    = $(window).width();
+          var windowHeight   = $(window).height();
+          var maxImageWidth  = windowWidth - self.containerLeftPadding - self.containerRightPadding - 20;
+          var maxImageHeight = windowHeight - self.containerTopPadding - self.containerBottomPadding - 120;
 
           // Is there a fitting issue?
           if ((preloader.width > maxImageWidth) || (preloader.height > maxImageHeight)) {
+            var imageHeight, imageWidth;
             if ((preloader.width / maxImageWidth) > (preloader.height / maxImageHeight)) {
               imageWidth  = maxImageWidth;
               imageHeight = parseInt(preloader.height / (preloader.width / imageWidth), 10);
-              $image.width(imageWidth);
-              $image.height(imageHeight);
+              self.$image.width(imageWidth);
+              self.$image.height(imageHeight);
             } else {
               imageHeight = maxImageHeight;
               imageWidth = parseInt(preloader.width / (preloader.height / imageHeight), 10);
-              $image.width(imageWidth);
-              $image.height(imageHeight);
+              self.$image.width(imageWidth);
+              self.$image.height(imageHeight);
             }
           }
         }
-        self.sizeContainer($image.width(), $image.height());
+        self.sizeContainer(self.$image.width(), self.$image.height());
       };
 
       preloader.src          = this.album[imageNumber].link;
@@ -295,8 +298,8 @@
 
     // Display the image and it's details and begin preload neighboring images.
     Lightbox.prototype.showImage = function() {
-      this.$lightbox.find('.lb-loader').hide();
-      this.$lightbox.find('.lb-image').fadeIn(this.options.imageFadeDuration);
+      this.$loader.hide();
+      this.$image.fadeIn(this.options.imageFadeDuration);
 
       this.updateNav();
       this.updateDetails();
@@ -320,20 +323,22 @@
       if (this.album.length > 1) {
         if (this.options.wrapAround) {
           if (alwaysShowNav) {
-            this.$lightbox.find('.lb-prev, .lb-next').css('opacity', '1');
+            this.$prev.css('opacity', '1');
+            this.$next.css('opacity', '1');
           }
-          this.$lightbox.find('.lb-prev, .lb-next').show();
+          this.$prev.show();
+          this.$next.show();
         } else {
           if (this.currentImageIndex > 0) {
-            this.$lightbox.find('.lb-prev').show();
+            this.$prev.show();
             if (alwaysShowNav) {
-              this.$lightbox.find('.lb-prev').css('opacity', '1');
+              this.$prev.css('opacity', '1');
             }
           }
           if (this.currentImageIndex < this.album.length - 1) {
-            this.$lightbox.find('.lb-next').show();
+            this.$next.show();
             if (alwaysShowNav) {
-              this.$lightbox.find('.lb-next').css('opacity', '1');
+              this.$next.css('opacity', '1');
             }
           }
         }
