@@ -185,6 +185,7 @@
 
       function addToAlbum($link) {
         self.album.push({
+          el: $link,
           link: $link.attr('href'),
           title: $link.attr('data-title') || $link.attr('title')
         });
@@ -285,6 +286,7 @@
 
       preloader.src          = this.album[imageNumber].link;
       this.currentImageIndex = imageNumber;
+      this.$lightbox.trigger("lightbox.changed", [this.album[imageNumber].el]);
     };
 
     // Stretch overlay to fit the viewport
@@ -483,6 +485,7 @@
       $('select, object, embed').css({
         visibility: "visible"
       });
+      this.$lightbox.trigger("lightbox.closed");
     };
 
     return Lightbox;
