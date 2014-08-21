@@ -309,10 +309,7 @@
 
       function postResize() {
         self.$lightbox.find('.lb-dataContainer').width(newWidth);
-        self.showImage();
-        if (self.options.showPreviews) {
-          self.updatePreviews(newWidth, newHeight);
-        }
+        self.showImage(newWidth, newHeight);
       }
 
       if (oldWidth !== newWidth || oldHeight !== newHeight) {
@@ -348,9 +345,13 @@
     };
 
     // Display the image and it's details and begin preload neighboring images.
-    Lightbox.prototype.showImage = function() {
+    Lightbox.prototype.showImage = function(newWidth, newHeight) {
       this.$loader.hide();
       this.$image.fadeIn(this.options.imageFadeDuration);
+
+      if (this.options.showPreviews) {
+        this.updatePreviews(newWidth, newHeight);
+      }
 
       this.updateNav();
       this.updateDetails();
