@@ -184,9 +184,11 @@
       var imageNumber = 0;
 
       function addToAlbum($link) {
+        var href = $link.attr('href');
         self.album.push({
           el: $link,
-          link: $link.attr('href'),
+          link: href,
+          thumbnail: $link.attr("data-lightbox-thumbnail") || href,
           title: $link.attr('data-title') || $link.attr('title')
         });
       }
@@ -330,14 +332,14 @@
         this.$prevPreviewContainer.hide();
       } else {
         this.$prevPreviewContainer.show();
-        this.$prevPreview.attr('src', this.album[this.currentImageIndex-1].link);
+        this.$prevPreview.attr('src', this.album[this.currentImageIndex-1].thumbnail);
       }
 
       if (this.isLastImage()) {
         this.$nextPreviewContainer.hide();
       } else {
         this.$nextPreviewContainer.show();
-        this.$nextPreview.attr('src', this.album[this.currentImageIndex+1].link);
+        this.$nextPreview.attr('src', this.album[this.currentImageIndex+1].thumbnail);
       }
 
       if (this.options.overridePreviewsPosition == "center") {
@@ -352,9 +354,7 @@
 
       this.updateNav();
       this.updateDetails();
-      if (!this.options.showPreviews) {
-        this.preloadNeighboringImages();
-      }
+      this.preloadNeighboringImages();
       this.enableKeyboardNav();
     };
 
