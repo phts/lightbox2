@@ -134,9 +134,8 @@
       }
       this.$overlay.on('click', closeFunc);
       this.$lightbox.on('click', closeFunc);
-      this.$outerContainer.on('click', closeFunc);
-      this.$loader.on('click', closeFunc);
       this.$lightbox.find('.lb-close').on('click', closeFunc);
+      this.$outerContainer.on('click', function() { return false; });
 
       var clickPrev = function() {
         if (self.isFirstImage()) {
