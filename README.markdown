@@ -1,5 +1,9 @@
 # Lightbox2
 
+This is a fork of [the original Lightbox 2.7.1](https://github.com/lokesh/lightbox2).
+
+---
+
 The original lightbox script. Eight years later — still going strong!
 
 ## Demo and basic instructions
