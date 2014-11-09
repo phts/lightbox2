@@ -42,11 +42,11 @@
       this.build();
     };
 
-    // Loop through anchors and areamaps looking for either data-lightbox attributes or rel attributes
-    // that contain 'lightbox'. When these are clicked, start lightbox.
+    // Loop through anchors and areamaps looking for data-lightbox attributes
+    // When these are clicked, start lightbox.
     Lightbox.prototype.enable = function() {
       var self = this;
-      $('body').on('click', 'a[rel^=lightbox], area[rel^=lightbox], a[data-lightbox], area[data-lightbox]', function(event) {
+      $('body').on('click', 'a[data-lightbox], area[data-lightbox]', function(event) {
         self.start($(event.currentTarget));
         return false;
       });
@@ -192,31 +192,12 @@
         });
       }
 
-      // Support both data-lightbox attribute and rel attribute implementations
       var dataLightboxValue = $link.attr('data-lightbox');
-      var $links;
-
-      if (dataLightboxValue) {
-        $links = $($link.prop("tagName") + '[data-lightbox="' + dataLightboxValue + '"]');
-        for (var i = 0; i < $links.length; i = ++i) {
-          addToAlbum($($links[i]));
-          if ($links[i] === $link[0]) {
-            imageNumber = i;
-          }
-        }
-      } else {
-        if ($link.attr('rel') === 'lightbox') {
-          // If image is not part of a set
-          addToAlbum($link);
-        } else {
-          // If image is part of a set
-          $links = $($link.prop("tagName") + '[rel="' + $link.attr('rel') + '"]');
-          for (var j = 0; j < $links.length; j = ++j) {
-            addToAlbum($($links[j]));
-            if ($links[j] === $link[0]) {
-              imageNumber = j;
-            }
-          }
+      var $links = $($link.prop("tagName") + '[data-lightbox="' + dataLightboxValue + '"]');
+      for (var i = 0; i < $links.length; i = ++i) {
+        addToAlbum($($links[i]));
+        if ($links[i] === $link[0]) {
+          imageNumber = i;
         }
       }
 
