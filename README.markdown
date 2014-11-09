@@ -2,6 +2,29 @@
 
 This is a fork of [the original Lightbox 2.7.1](https://github.com/lokesh/lightbox2).
 
+## Improvements
+
+### v1.0.0
+
+* Refactored in order to be able to set custom options and initialize `Lightbox` inside your code anywhere you need.
+* Fixed image blicking during change especially when fade durations are small.
+  Introduced a new option: `hideImageDuringChange`.
+* Added options to tune more fade durations:
+    - `loaderFadeDuration`
+    - `imageFadeDuration`
+    - `detailsFadeDuration`
+* New feature: previews. Previous and next clickable image previews are shown.
+    - Related options:
+        - `showPreviews` - turns on/off the feature;
+        - `overridePreviewsPosition` (values: "center") - if specified then the script overrides the previews position and ignores CSS.
+    - Use element data attr `data-lightbox-thumbnail` to specify thumbnail image for a preview.
+* Trigger events:
+    - `lightbox.changed` on image change;
+    - `lightbox.closed` on lightbox close.
+* Disabled closing on image/loader click.
+* Dropped support of `rel` attrs.
+* EXPERIMENTAL: Added support of Youtube embedded videos.
+
 ---
 
 The original lightbox script. Eight years later — still going strong!
