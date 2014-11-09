@@ -113,8 +113,8 @@
         this.$previewsContainer = this.$lightbox.find(".lb-previews-container");
         this.$prevPreviewContainer = this.$lightbox.find('.lb-prev-preview-container');
         this.$nextPreviewContainer = this.$lightbox.find('.lb-next-preview-container');
-        this.$prevPreview = this.$lightbox.find('.lb-prev-preview');;
-        this.$nextPreview = this.$lightbox.find('.lb-next-preview');;
+        this.$prevPreview = this.$lightbox.find('.lb-prev-preview');
+        this.$nextPreview = this.$lightbox.find('.lb-next-preview');
       }
 
       // Store css values for future lookup
