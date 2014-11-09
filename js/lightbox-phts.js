@@ -29,11 +29,68 @@
                                  }
   }
 
+  var AlbumEntryFactory = function(lb) {
+    this.lb = lb;
+
+    var _types = {
+      image: Img
+    };
+
+    this.get = function($link) {
+      var type = _getLinkType($link);
+      return new _types[type](lb, $link);
+    };
+
+    this.getSupportedTypes = function() {
+      return Object.keys(_types);
+    };
+
+    var _getLinkType = function($link) {
+      return "image";
+    };
+  };
+
+  var Img = function(lb, $link) {
+    this.el = $link;
+    this.link = $link.attr("href");
+    this.thumbnail = $link.attr("data-lightbox-thumbnail") || this.link;
+    this.title = $link.attr('data-title') || $link.attr('title');
+
+    this.load = function() {
+      var self = this;
+
+      // When image to show is preloaded, we send the width and height to sizeContainer()
+      var preloader = new Image();
+      preloader.onload = function() {
+        var $image = lb.$imageContainer.find(".lb-image");
+        if (!$image[0]) {
+          $image = $("<img class='lb-image' src='' />");
+          lb.$imageContainer.html($image);
+        }
+        $image.attr('src', self.link);
+
+        var $preloader = $(preloader);
+
+        $image.width(preloader.width);
+        $image.height(preloader.height);
+
+        lb._fitImage(preloader.width, preloader.height, function(newImageWidth, newImageHeight){
+          $image.width(newImageWidth);
+          $image.height(newImageHeight);
+        });
+        lb.sizeContainer($image.width(), $image.height());
+      };
+
+      preloader.src = self.link;
+    };
+  };
+
   var Lightbox = (function() {
     function Lightbox(options) {
       this.options           = $.extend({}, defaults, options);
       this.album             = [];
       this.currentImageIndex = void 0;
+      this.albumEntryFactory = new AlbumEntryFactory(this);
       this.init();
     }
 
@@ -75,7 +132,7 @@
       el +=
           "<div class='lb-outerContainer'>"+
             "<div class='lb-container'>"+
-              "<img class='lb-image' src='' />"+
+              "<div class='lb-imageContainer'></div>"+
               "<div class='lb-nav'>"+
                 "<a class='lb-prev' href='' ></a>"+
                 "<a class='lb-next' href='' ></a>"+
@@ -104,7 +161,7 @@
       this.$overlay        = $('#lightboxOverlay');
       this.$outerContainer = this.$lightbox.find('.lb-outerContainer');
       this.$container      = this.$lightbox.find('.lb-container');
-      this.$image          = this.$lightbox.find('.lb-image');
+      this.$imageContainer = this.$lightbox.find('.lb-imageContainer');
       this.$loader         = this.$lightbox.find('.lb-loader');
       this.$nav            = this.$lightbox.find('.lb-nav');
       this.$prev           = this.$lightbox.find('.lb-prev');
@@ -183,21 +240,16 @@
       this.album = [];
       var imageNumber = 0;
 
-      function addToAlbum($link) {
-        var href = $link.attr('href');
-        self.album.push({
-          el: $link,
-          link: href,
-          thumbnail: $link.attr("data-lightbox-thumbnail") || href,
-          title: $link.attr('data-title') || $link.attr('title')
-        });
-      }
-
       var dataLightboxValue = $link.attr('data-lightbox');
       var $links = $($link.prop("tagName") + '[data-lightbox="' + dataLightboxValue + '"]');
       for (var i = 0; i < $links.length; i = ++i) {
-        addToAlbum($($links[i]));
-        if ($links[i] === $link[0]) {
+        var link = $links[i];
+        var albumEntry = this.albumEntryFactory.get($(link));
+        if (!albumEntry) {
+          continue;
+        }
+        this.album.push(albumEntry);
+        if (link === $link[0]) {
           imageNumber = i;
         }
       }
@@ -215,8 +267,6 @@
 
     // Hide most UI elements in preparation for the animated resizing of the lightbox.
     Lightbox.prototype.changeImage = function(imageNumber) {
-      var self = this;
-
       this.disableKeyboardNav();
 
       this.$overlay.fadeIn(this.options.fadeDuration);
@@ -224,52 +274,42 @@
       this.$loader.fadeIn(this.options.loaderFadeDuration);
       this.$lightbox.find('.lb-nav, .lb-prev, .lb-next, .lb-dataContainer, .lb-numbers, .lb-caption').hide();
       if (this.options.hideImageDuringChange) {
-        this.$image.hide();
+        this.$imageContainer.hide();
       }
 
       this.$outerContainer.addClass('animating');
 
-      // When image to show is preloaded, we send the width and height to sizeContainer()
-      var preloader = new Image();
-      preloader.onload = function() {
-        self.$image.attr('src', self.album[imageNumber].link);
+      this.currentImageIndex = imageNumber;
+      var albumEntry = this.album[imageNumber];
+      albumEntry.load();
 
-        var $preloader = $(preloader);
+      this.$lightbox.trigger("lightbox.changed", [albumEntry.el]);
+    };
 
-        self.$image.width(preloader.width);
-        self.$image.height(preloader.height);
+    Lightbox.prototype._fitImage = function(imageWidth, imageHeight, handlerFunc) {
+      if (this.options.fitImagesInViewport) {
+        // Fit image inside the viewport.
+        // Take into account the border around the image and an additional 10px gutter on each side.
 
-        if (self.options.fitImagesInViewport) {
-          // Fit image inside the viewport.
-          // Take into account the border around the image and an additional 10px gutter on each side.
+        var windowWidth    = $(window).width();
+        var windowHeight   = $(window).height();
+        var maxImageWidth  = windowWidth - this.containerLeftPadding - this.containerRightPadding - 20;
+        var maxImageHeight = windowHeight - this.containerTopPadding - this.containerBottomPadding - 120;
 
-          var windowWidth    = $(window).width();
-          var windowHeight   = $(window).height();
-          var maxImageWidth  = windowWidth - self.containerLeftPadding - self.containerRightPadding - 20;
-          var maxImageHeight = windowHeight - self.containerTopPadding - self.containerBottomPadding - 120;
-
-          // Is there a fitting issue?
-          if ((preloader.width > maxImageWidth) || (preloader.height > maxImageHeight)) {
-            var imageHeight, imageWidth;
-            if ((preloader.width / maxImageWidth) > (preloader.height / maxImageHeight)) {
-              imageWidth  = maxImageWidth;
-              imageHeight = parseInt(preloader.height / (preloader.width / imageWidth), 10);
-              self.$image.width(imageWidth);
-              self.$image.height(imageHeight);
-            } else {
-              imageHeight = maxImageHeight;
-              imageWidth = parseInt(preloader.width / (preloader.height / imageHeight), 10);
-              self.$image.width(imageWidth);
-              self.$image.height(imageHeight);
-            }
+        // Is there a fitting issue?
+        if ((imageWidth > maxImageWidth) || (imageHeight > maxImageHeight)) {
+          var newImageHeight, newImageWidth;
+          if ((imageWidth / maxImageWidth) > (imageHeight / maxImageHeight)) {
+            newImageWidth  = maxImageWidth;
+            newImageHeight = parseInt(imageHeight / (imageWidth / newImageWidth), 10);
+            handlerFunc.call(this, newImageWidth, newImageHeight);
+          } else {
+            newImageHeight = maxImageHeight;
+            newImageWidth = parseInt(imageWidth / (imageHeight / newImageHeight), 10);
+            handlerFunc.call(this, newImageWidth, newImageHeight);
           }
         }
-        self.sizeContainer(self.$image.width(), self.$image.height());
-      };
-
-      preloader.src          = this.album[imageNumber].link;
-      this.currentImageIndex = imageNumber;
-      this.$lightbox.trigger("lightbox.changed", [this.album[imageNumber].el]);
+      }
     };
 
     // Stretch overlay to fit the viewport
@@ -328,7 +368,7 @@
     // Display the image and it's details and begin preload neighboring images.
     Lightbox.prototype.showImage = function(newWidth, newHeight) {
       this.$loader.hide();
-      this.$image.fadeIn(this.options.imageFadeDuration);
+      this.$imageContainer.fadeIn(this.options.imageFadeDuration);
 
       if (this.options.showPreviews) {
         this.updatePreviews(newWidth, newHeight);

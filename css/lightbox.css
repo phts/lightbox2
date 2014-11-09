@@ -25,6 +25,11 @@ body:after {
   font-weight: normal;
 }
 
+.lightbox .lb-imageContainer {
+  position: absolute;
+  height: 100%;
+}
+
 .lightbox .lb-image {
   display: block;
   height: auto;
