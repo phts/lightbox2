@@ -106,6 +106,7 @@
       this.$container      = this.$lightbox.find('.lb-container');
       this.$image          = this.$lightbox.find('.lb-image');
       this.$loader         = this.$lightbox.find('.lb-loader');
+      this.$nav            = this.$lightbox.find('.lb-nav');
       this.$prev           = this.$lightbox.find('.lb-prev');
       this.$next           = this.$lightbox.find('.lb-next');
 
@@ -350,7 +351,7 @@
         alwaysShowNav = (this.options.alwaysShowNavOnTouchDevices)? true: false;
       } catch (e) {}
 
-      this.$lightbox.find('.lb-nav').show();
+      this.$nav.show();
 
       if (this.album.length > 1) {
         if (this.options.wrapAround) {
