@@ -30,6 +30,11 @@ body:after {
   height: 100%;
 }
 
+.lightbox .lb-outerContainer.youtube,
+.lightbox .lb-previews-container .lb-preview-images-container .youtube {
+  background-color: #a0b;
+}
+
 .lightbox .lb-image {
   display: block;
   height: auto;

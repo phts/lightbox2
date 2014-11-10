@@ -33,7 +33,8 @@
     this.lb = lb;
 
     var _types = {
-      image: Img
+      image: Img,
+      youtube: Youtube
     };
 
     this.get = function($link) {
@@ -48,6 +49,9 @@
     };
 
     var _getLinkType = function($link) {
+      if ($link.attr("href").search("youtube.com") != -1) {
+        return "youtube";
+      }
       return "image";
     };
   };
@@ -86,6 +90,32 @@
       preloader.src = self.link;
     };
   };
+
+  var Youtube = function(lb, $link) {
+    this.el = $link;
+    this.link = $link.attr("href");
+
+    var videoId = this.link.split("=")[1];
+    this.thumbnail = $link.attr("data-lightbox-thumbnail") || "//img.youtube.com/vi/"+videoId+"/0.jpg";
+    this.title = $link.attr('data-title') || $link.attr('title');
+
+    this.load = function() {
+      var $iframe = $(['<iframe',
+                          'src="//www.youtube.com/embed/'+videoId+'"',
+                          'frameborder="0"',
+                          'allowfullscreen',
+                          'height="100%"',
+                          'width="100%"',
+                      '></iframe>'].join(" "));
+      lb.$imageContainer.html($iframe);
+      lb._fitImage(2000, 1600, function(newImageWidth, newImageHeight){
+        $iframe.attr("width", newImageWidth);
+        $iframe.attr("height", newImageHeight);
+      });
+      lb.sizeContainer($iframe.width(), $iframe.height());
+      lb.$nav.hide();
+    };
+  }
 
   var Lightbox = (function() {
     function Lightbox(options) {
