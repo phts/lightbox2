@@ -38,7 +38,9 @@
 
     this.get = function($link) {
       var type = _getLinkType($link);
-      return new _types[type](lb, $link);
+      var entry = new _types[type](lb, $link);
+      entry.type = type;
+      return entry;
     };
 
     this.getSupportedTypes = function() {
@@ -282,6 +284,7 @@
       this.currentImageIndex = imageNumber;
       var albumEntry = this.album[imageNumber];
       albumEntry.load();
+      this._setAlbumEntryTypeToEl(this.$outerContainer, albumEntry);
 
       this.$lightbox.trigger("lightbox.changed", [albumEntry.el]);
     };
@@ -350,6 +353,7 @@
         this.$prevPreviewContainer.hide();
       } else {
         this.$prevPreviewContainer.show();
+        this._setAlbumEntryTypeToEl(this.$prevPreviewContainer, this.album[this.currentImageIndex-1]);
         this.$prevPreview.attr('src', this.album[this.currentImageIndex-1].thumbnail);
       }
 
@@ -357,12 +361,20 @@
         this.$nextPreviewContainer.hide();
       } else {
         this.$nextPreviewContainer.show();
+        this._setAlbumEntryTypeToEl(this.$nextPreviewContainer, this.album[this.currentImageIndex+1]);
         this.$nextPreview.attr('src', this.album[this.currentImageIndex+1].thumbnail);
       }
 
       if (this.options.overridePreviewsPosition == "center") {
         this.$previewsContainer.css({top: imgHeight/2 - this.$previewsContainer.height()/2 + "px"});
       }
+    };
+
+    Lightbox.prototype._setAlbumEntryTypeToEl = function($el, albumEntry) {
+      $.each(this.albumEntryFactory.getSupportedTypes(), function(i, e) {
+        $el.removeClass(e);
+      });
+      $el.addClass(albumEntry.type);
     };
 
     // Display the image and it's details and begin preload neighboring images.
