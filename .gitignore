@@ -1,16 +1,4 @@
-*.log
-*.sql
-*.sqlite
-.htaccess
-.ftppass
-.host_config
-
-*.DS_Store
-ehthumbs.db
-Icon?
-Thumbs.db
-
-.sass-cache
-Rakefile
-rsync-exclude
-node_modules
+# Release files
+js/*.min.js
+js/*.map
+releases
