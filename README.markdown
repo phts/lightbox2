@@ -1,4 +1,4 @@
-# Lightbox2
+# Lightbox-phts
 
 This is a fork of [the original Lightbox 2.7.1](https://github.com/lokesh/lightbox2).
 
