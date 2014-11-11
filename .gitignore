@@ -1,0 +1,4 @@
+# Release files
+js/*.min.js
+js/*.map
+releases
