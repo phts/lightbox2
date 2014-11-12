@@ -1,4 +1,4 @@
-/**
+/*!
  * Lightbox-phts v1.0.0
  *
  * Fork of Lokesh Dhakar's Lightbox 2.7.1 with some improvements and new features
@@ -32,7 +32,7 @@
     albumLabel:                  function(curImageNum, albumSize) {
                                    return "Image " + curImageNum + " of " + albumSize;
                                  }
-  }
+  };
 
   var AlbumEntryFactory = function(lb) {
     this.lb = lb;
@@ -120,7 +120,7 @@
       lb.sizeContainer($iframe.width(), $iframe.height());
       lb.$nav.hide();
     };
-  }
+  };
 
   var Lightbox = (function() {
     function Lightbox(options) {
@@ -226,7 +226,7 @@
       var closeFunc = function() {
         self.end();
         return false;
-      }
+      };
       this.$overlay.on('click', closeFunc);
       this.$lightbox.on('click', closeFunc);
       this.$lightbox.find('.lb-close').on('click', closeFunc);
