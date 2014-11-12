@@ -2,3 +2,9 @@
 js/*.min.js
 js/*.map
 releases
+
+# Any log files
+*.log
+
+# node.js related files
+node_modules
