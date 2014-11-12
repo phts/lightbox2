@@ -1,9 +1,14 @@
 /**
- * Original script:
- *   Lightbox v2.7.1
- *   by Lokesh Dhakar - http://lokeshdhakar.com/projects/lightbox2/
+ * Lightbox-phts v1.0.0
  *
- * Improved by Phil Tsarik - http://github.com/phts/lightbox2
+ * Fork of Lokesh Dhakar's Lightbox 2.7.1 with some improvements and new features
+ * by Phil Tsarik - https://github.com/phts/lightbox2
+ *
+ * ---
+ *
+ * Lightbox v2.7.1
+ * by Lokesh Dhakar - http://lokeshdhakar.com/projects/lightbox2
+ *
  */
 
 (function() {
