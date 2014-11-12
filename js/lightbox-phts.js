@@ -1,4 +1,4 @@
-/**
+/*!
  * Lightbox-phts v1.0.0
  *
  * Fork of Lokesh Dhakar's Lightbox 2.7.1 with some improvements and new features
